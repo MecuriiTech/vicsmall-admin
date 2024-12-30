@@ -1,2 +1,3 @@
 # vicsmall-admin
-Admin/management web application for Vicsmall e-commerce platform 
+
+Admin/management web application for Vicsmall e-commerce platform
