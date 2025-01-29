@@ -1,11 +1,5 @@
-const Dashboard = () => {
-  return (
-    <>
-      <h1 className="mb-4 hidden text-3xl font-bold text-gray-800 md:block">
-        Dashboard
-      </h1>
-    </>
-  );
+const Home = () => {
+  return <div>Home</div>;
 };
 
-export default Dashboard;
+export default Home;
