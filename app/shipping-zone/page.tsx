@@ -33,7 +33,7 @@ export default function page() {
     </div>
 
     <div className="flex justify-end px-4 py-2">
-            <Link href="/admin/sign-up">
+            <Link href="/shipping-zone/shipping-zone-form">
           <Button className="rounded-md bg-[#FF7A45] px-4 py-2 font-medium text-white hover:bg-[#FF7A45]/90">
             Add shipping zone
           </Button>

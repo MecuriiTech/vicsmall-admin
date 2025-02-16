@@ -4,7 +4,9 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input" 
 import { Switch } from "@/components/ui/switch"
-import { Trash2 } from "lucide-react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import Delete from '@mui/icons-material/Delete';
 
 interface PaymentMethod {
   name: string
@@ -48,6 +50,15 @@ export default function Page() {
     },
   ])
 
+  // New currency dialog state
+  const [isAddCurrencyOpen, setIsAddCurrencyOpen] = useState(false)
+  const [newCurrency, setNewCurrency] = useState<Currency>({
+    name: "",
+    isDefault: false,
+    exchangeRate: "1.0000",
+    symbol: ""
+  })
+
   const togglePaymentMethod = (index: number) => {
     setPaymentMethods((methods) =>
       methods.map((method, i) => (i === index ? { ...method, enabled: !method.enabled } : method)),
@@ -71,16 +82,24 @@ export default function Page() {
     setCurrencies((curr) => curr.map((currency, i) => (i === index ? { ...currency, exchangeRate: rate } : currency)))
   }
 
+  const openAddCurrencyDialog = () => {
+    setNewCurrency({
+      name: "",
+      isDefault: false,
+      exchangeRate: "1.0000",
+      symbol: ""
+    })
+    setIsAddCurrencyOpen(true)
+  }
+
   const addCurrency = () => {
-    setCurrencies((curr) => [
-      ...curr,
-      {
-        name: "New Currency",
-        isDefault: false,
-        exchangeRate: "1.0000",
-        symbol: "",
-      },
-    ])
+    if (newCurrency.name.trim() === "") {
+      // Don't add if name is empty
+      return
+    }
+    
+    setCurrencies((curr) => [...curr, { ...newCurrency }])
+    setIsAddCurrencyOpen(false)
   }
 
   const deleteCurrency = (index: number) => {
@@ -170,7 +189,7 @@ export default function Page() {
                     className="text-gray-500 hover:text-gray-700"
                     onClick={() => deleteCurrency(index)}
                   >
-                    <Trash2 className="h-5 w-5" />
+                    <Delete className="h-5 w-5" />
                   </Button>
                 )}
               </div>
@@ -184,13 +203,80 @@ export default function Page() {
             <Button
               variant="secondary"
               className="bg-indigo-100 text-indigo-700 hover:bg-indigo-200"
-              onClick={addCurrency}
+              onClick={openAddCurrencyDialog}
             >
               Add Currency
             </Button>
           </div>
         </div>
       </div>
+
+      {/* Add Currency Dialog */}
+      <Dialog open={isAddCurrencyOpen} onOpenChange={setIsAddCurrencyOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add New Currency</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="currency-name" className="text-right">
+                Currency Name
+              </Label>
+              <Input
+                id="currency-name"
+                value={newCurrency.name}
+                onChange={(e) => setNewCurrency({ ...newCurrency, name: e.target.value })}
+                className="col-span-3"
+                placeholder="e.g. USD - US Dollar ($)"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="exchange-rate" className="text-right">
+                Exchange Rate
+              </Label>
+              <Input
+                id="exchange-rate"
+                value={newCurrency.exchangeRate}
+                onChange={(e) => setNewCurrency({ ...newCurrency, exchangeRate: e.target.value })}
+                className="col-span-3"
+                placeholder="e.g. 0.0013"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="currency-symbol" className="text-right">
+                Symbol
+              </Label>
+              <Input
+                id="currency-symbol"
+                value={newCurrency.symbol}
+                onChange={(e) => setNewCurrency({ ...newCurrency, symbol: e.target.value })}
+                className="col-span-3"
+                placeholder="e.g. $"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="is-default" className="text-right">
+                Make Default
+              </Label>
+              <div className="col-span-3">
+                <Switch
+                  id="is-default"
+                  checked={newCurrency.isDefault}
+                  onCheckedChange={(checked) => setNewCurrency({ ...newCurrency, isDefault: checked })}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setIsAddCurrencyOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={addCurrency}>
+              Add Currency
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
